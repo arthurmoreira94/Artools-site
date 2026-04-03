@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premium Pen - The Signature Collection</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+    <!-- GSAP & Lenis Plugins para Animação e Scroll Suave -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1/bundled/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <!-- SplitType para animar as letras textuais elegantemente -->
+    <script src="https://unpkg.com/split-type"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scrolly-video@latest/dist/scrolly-video.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        stone: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            200: '#e7e5e4',
+                            300: '#d6d3d1',
+                            400: '#a8a29e',
+                            500: '#78716c',
+                            600: '#57534e',
+                            700: '#44403c',
+                            800: '#292524',
+                            900: '#1c1917',
+                        },
+                        'surface-light': '#EAEAE5',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Variáveis baseadas no design_systemnew.html */
+        :root {
+            --primary: #1C1C1C;
+            --secondary: #EAEAE5;
+            --accent: #A3A3A3;
+            --neutral: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--secondary);
+            color: var(--primary);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            /* Evita pular o scroll original */
+            overscroll-behavior: none; 
+        }
+
+        /* 
+           1. HERO SECTION 
+           Utiliza 300vh para permitir um scroll longo que vai animar o vídeo.
+        */
+        .hero-section {
+            height: 300vh;
+            position: relative;
+        }
+
+        /* 
+           O container com 'sticky' trava a tela enquanto rodamos pelo hero-section 
+        */
+        .sticky-container {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 
+           2. VÍDEO (Fundo da Tela Cheia)
+        */
+        .video-wrapper {
+            position: absolute;
+            inset: 0;
+            height: 100%; 
+            width: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Escala inicial para fazer um leve zoom-out (parallax) ao rorar o scroll */
+            transform: scale(1.1); 
+            transform-origin: center center;
+            will-change: transform;
+        }
+
+        /* 
+           3. BOTÕES (Herdados do Design System)
+        */
+        @keyframes shimmer {
+            from { transform: translateX(-100%) skewX(-15deg); }
+            to { transform: translateX(200%) skewX(-15deg); }
+        }
+        
+        .shimmer-btn {
+            position: relative;
+            overflow: hidden;
+            background: #1C1C1C;
+            color: #fff;
+            border-radius: 9999px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .shimmer-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
+            transform: translateX(-100%) skewX(-15deg);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .shimmer-btn:hover::before {
+            opacity: 1;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        .shimmer-btn:hover {
+            box-shadow: 0 10px 25px -5px rgba(28, 28, 28, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .beam-ring {
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: -1;
+        }
+        
+        .beam-ring::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 2px;
+            background: conic-gradient(from 0deg, transparent 0 340deg, #FFF 360deg);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            animation: spin 2s linear infinite;
+        }
+        
+        .shimmer-btn:hover .beam-ring { opacity: 1; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Botão Secundário */
+        .btn-outline {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(28,28,28,0.1);
+            color: #1C1C1C;
+            border-radius: 9999px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #ffffff;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+        
+        .btn-outline:hover {
+            border-color: #1C1C1C;
+            background: #1C1C1C;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px -3px rgba(28, 28, 28, 0.1);
+        }
+
+        /* 
+           4. TIPOGRAFIA & ACESSÓRIOS 
+        */
+        .text-content {
+            z-index: 20;
+        }
+
+        .line {
+            overflow: hidden;
+            padding-bottom: 0.15em; /* Impede os loops de letras pendentes como "g" de cortar */
+            margin-bottom: -0.15em; /* Neutraliza o peso do padding, colando as linhas */
+        }
+
+        /* Animação do Scroll Indicator */
+        @keyframes pulse-scroll {
+            0% { transform: scaleY(0); transform-origin: top; }
+            50% { transform: scaleY(1); transform-origin: top; }
+            50.1% { transform: scaleY(1); transform-origin: bottom; }
+            100% { transform: scaleY(0); transform-origin: bottom; }
+        }
+        .animate-pulse-scroll {
+            animation: pulse-scroll 2s ease-in-out infinite;
+        }
+
+        /* Estilo Texto Vazado (Reference Image) */
+        .text-outline {
+            color: transparent;
+            -webkit-text-stroke: 1px #1C1C1C;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen selection:bg-stone-800 selection:text-white pb-10">
+
+    <!-- Navbar minimalista sobreposta -->
+    <header class="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-6 text-stone-900 opacity-0 load-anim translate-y-[-10px]">
+        <div class="flex justify-between items-center bg-transparent">
+            <!-- Brand Logo -->
+            <div class="font-bold tracking-tighter text-2xl flex items-center gap-2">
+                <div class="bg-[#1C1C1C] text-white w-7 h-7 flex items-center justify-center rounded-sm text-sm"><iconify-icon icon="solar:pen-linear"></iconify-icon></div>
+                ARTOOLS<span class="font-light text-stone-500">.PRO</span>
+            </div>
+            
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex gap-10 text-xs font-mono uppercase tracking-widest font-bold text-stone-600">
+                <a href="#" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">Design</a>
+                <a href="#" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">Technology</a>
+                <a href="#" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">Specs</a>
+            </nav>
+            
+            <!-- Mobile Toggle -->
+            <button class="md:hidden">
+                <iconify-icon icon="solar:hamburger-menu-linear" class="text-3xl"></iconify-icon>
+            </button>
+            
+            <!-- Bag Actions -->
+            <div class="hidden md:block">
+                <iconify-icon icon="solar:bag-3-linear" class="text-2xl text-stone-700 hover:text-[#1C1C1C] transition-colors cursor-pointer"></iconify-icon>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section" id="hero-section">
+        <div class="sticky-container">
+            
+            <!-- Vídeo Interativo (ScrollyVideo / WebCodecs Frame Decoding) -->
+            <div class="video-wrapper bg-white">
+                <div id="hero-scrolly-video" class="w-full h-full absolute inset-0"></div>
+            </div>
+
+            <!-- Informações Centrais (Alinhadas à Esquerda) -->
+            <div class="absolute inset-0 z-10 w-full h-full pointer-events-none flex items-center">
+                <div class="w-full max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24 text-content">
+                    <div class="max-w-xl flex flex-col items-start text-left pointer-events-auto">
+                        
+                        <!-- Headline -->
+                        <h1 id="headline" class="text-6xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tighter leading-[0.85] text-[#1C1C1C] mb-6 font-display">
+                            A caneta<br/>
+                            <span class="text-outline font-medium tracking-[0.02em]">mais tecnológica</span><br/>
+                            do mundo.
+                        </h1>
+                        
+                        <!-- Subheadline -->
+                        <p id="subheadline" class="text-base md:text-lg text-stone-600 mb-10 font-light leading-relaxed max-w-md">
+                            A Artools Precision Pen redefine o equilíbrio entre peso, fluxo e design. Feita para criadores que exigem perfeição em cada traço.
+                        </p>
+                        
+                        <!-- Calls to Action -->
+                        <div id="btn-group" class="flex flex-col sm:flex-row items-center justify-start gap-4">
+                            <button class="shimmer-btn px-8 py-3.5 text-xs font-bold tracking-widest uppercase flex items-center justify-center gap-3 w-full sm:w-auto">
+                                <div class="beam-ring"></div>
+                                Comprar Agora
+                            </button>
+                            
+                            <a href="#discover" class="btn-outline px-8 py-3.5 text-xs font-bold tracking-widest flex items-center justify-center gap-3 w-full sm:w-auto">
+                                Explorar <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Scroll Indicator (Bottom Center - Fixo no Container) -->
+                <div id="scroll-indicator" class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
+                    <span class="text-[0.55rem] font-mono text-stone-400 uppercase tracking-widest mt-2">
+                        Scroll to control
+                    </span>
+                    <div class="w-[1px] h-12 bg-stone-200 overflow-hidden relative">
+                        <div class="absolute top-0 left-0 w-full h-full bg-stone-500 origin-top animate-pulse-scroll"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Próxima seção (para demonstrar finalização do scroll) -->
+    <section id="discover" class="h-screen bg-stone-100 flex items-center justify-center border-t border-stone-300 relative z-10 flex-col gap-6 text-center px-6">
+        <h2 class="text-4xl md:text-5xl font-semibold tracking-tighter text-stone-900 max-w-2xl font-display reveal-item">
+            Uma obra construída para atravessar gerações.
+        </h2>
+        <p class="text-stone-600 max-w-md mx-auto reveal-item">
+            O fim do hero section. A página segue com a apresentação do produto.
+        </p>
+    </section>
+
+
+    <!-- JS para a Mágica Acontecer -->
+    <script>
+        document.addEventListener("DOMContentLoaded", (event) => {
+            
+            // 1. Iniciar GSAP Plugins
+            gsap.registerPlugin(ScrollTrigger);
+
+            // 2. Configurar Biblioteca Lenis (Scroll Suave Estilo Premium)
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Curva bem suave Apple-like
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                smoothTouch: false, // Touch pode usar scroll nativo se preferir, ou true para forçar
+                touchMultiplier: 2,
+            });
+
+            // Conectar o Lenis ao ScrollTrigger do sistema GSAP
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+            gsap.ticker.lagSmoothing(0);
+
+            // 3. Animações de Entrada (Entrada estilo Stripe/Linear)
+            // Preparar a tipografia usando SplitType
+            const headlineText = new SplitType('#headline', { types: 'lines, words' });
+            
+            // Setar estados iniciais do texto e elementos combinando Scale do .reveal original + Blur/Fade effect
+            gsap.set(headlineText.words, { y: "110%", opacity: 0, filter: "blur(12px)" });
+            gsap.set(['#subheadline', '#btn-group', '.load-anim', '#scroll-indicator'], { y: "2rem", scale: 0.98, opacity: 0, filter: "blur(12px)" });
+
+            // Timeline de entrada (In-Effect)
+            const tlIntro = gsap.timeline({ delay: 0.1 });
+            
+            tlIntro.to('.load-anim', { y: 0, scale: 1, opacity: 1, filter: "blur(0px)", duration: 1.2, ease: "power3.out" })
+                   .to(headlineText.words, { 
+                       y: "0%", 
+                       opacity: 1, 
+                       filter: "blur(0px)",
+                       duration: 1.2, 
+                       stagger: 0.04, 
+                       ease: "power4.out"
+                   }, "-=0.8")
+                   .to(['#subheadline', '#btn-group', '#scroll-indicator'], {
+                       y: 0,
+                       scale: 1,
+                       opacity: 1,
+                       filter: "blur(0px)",
+                       duration: 1.2,
+                       stagger: 0.15,
+                       ease: "power3.out"
+                   }, "-=1");
+
+            // Scroll Out Effect (Out-Effect) idêntico à animação de entrada mas invertido para sumir com o scroll
+            // Usamos fromTo com immediateRender: false para não sobrescrever a memória da timeline de intro!
+            gsap.fromTo(['.text-content', '.load-anim'], 
+                { 
+                    y: "0rem", scale: 1, opacity: 1, filter: "blur(0px)" 
+                },
+                {
+                    y: "-3rem",
+                    scale: 0.98,
+                    opacity: 0,
+                    filter: "blur(15px)",
+                    ease: "none",
+                    immediateRender: false,
+                    scrollTrigger: {
+                        trigger: "#hero-section",
+                        start: "top top",      
+                        end: "top -50%", // Termina de sumir antes do scroll chegar na metade      
+                        scrub: 1.2             
+                    }
+                }
+            );
+
+
+            // 4. Nova Tech Stack Premium: ScrollyVideo via WebCodecs API
+            // Substitui totalmente o canvas/video nativo limitados. O WebCodecs força a placa 
+            // de vídeo local a triturar o arquivo por Quadros Perfeitos de hardware (O "Padrão Apple").
+            
+            const scrollyVideo = new ScrollyVideo({
+                scrollyVideoContainer: "hero-scrolly-video", // Container onde o vídeo mora no DOM
+                src: "assets/raw_files/video.mp4",
+                useScroll: false, // Quem vai controlar o scroll é nosso maestro GSAP pra manter as transições perfeitas do Lenis
+                cover: true       // Estica de forma "object-fit: cover"
+            });
+
+            // Conectamos diretamente o ScrollTrigger da página com a % do ScrollyVideo
+            ScrollTrigger.create({
+                trigger: "#hero-section",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: true, // Scrub purista zero delay, pois o scrolly faz seu próprio frame-smoothing
+                onUpdate: (self) => {
+                    if (scrollyVideo) {
+                        try {
+                            scrollyVideo.setTargetTimePercent(self.progress);
+                        } catch(e) {}
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
