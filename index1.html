@@ -212,8 +212,8 @@
 
         .line {
             overflow: hidden;
-            padding-bottom: 0.15em; /* Impede os loops de letras pendentes como "g" de cortar */
-            margin-bottom: -0.15em; /* Neutraliza o peso do padding, colando as linhas */
+            padding-bottom: 0.15em;
+            margin-bottom: -0.22em; /* Equilíbrio compacto perfeito, garantindo fluidez sem choque visual */
         }
 
         /* Animação do Scroll Indicator */
@@ -230,18 +230,18 @@
         /* Estilo Texto Vazado (Reference Image) */
         .text-outline {
             color: transparent;
-            -webkit-text-stroke: 1px #1C1C1C;
+            -webkit-text-stroke: 1.5px #1C1C1C; /* Borda equilibrada e elegante */
         }
     </style>
 </head>
 <body class="antialiased min-h-screen selection:bg-stone-800 selection:text-white pb-10">
 
     <!-- Navbar minimalista sobreposta -->
-    <header class="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-6 text-stone-900 opacity-0 load-anim translate-y-[-10px]">
-        <div class="flex justify-between items-center bg-transparent">
+    <header class="fixed top-0 left-0 w-full z-50 py-8 text-stone-900 opacity-0 load-anim translate-y-[-10px] pointer-events-none">
+        <div class="w-full max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24 flex justify-between items-center bg-transparent pointer-events-auto">
             <!-- Brand Logo -->
-            <div class="font-bold tracking-tighter text-2xl flex items-center gap-2">
-                <div class="bg-[#1C1C1C] text-white w-7 h-7 flex items-center justify-center rounded-sm text-sm"><iconify-icon icon="solar:pen-linear"></iconify-icon></div>
+            <div class="font-bold tracking-tighter text-xl flex items-center gap-2">
+                <div class="bg-[#1C1C1C] text-white w-6 h-6 flex items-center justify-center rounded-sm text-xs"><iconify-icon icon="solar:pen-linear"></iconify-icon></div>
                 ARTOOLS<span class="font-light text-stone-500">.PRO</span>
             </div>
             
@@ -257,9 +257,10 @@
                 <iconify-icon icon="solar:hamburger-menu-linear" class="text-3xl"></iconify-icon>
             </button>
             
-            <!-- Bag Actions -->
-            <div class="hidden md:block">
-                <iconify-icon icon="solar:bag-3-linear" class="text-2xl text-stone-700 hover:text-[#1C1C1C] transition-colors cursor-pointer"></iconify-icon>
+            <!-- Bag Actions & Divider -->
+            <div class="hidden md:flex items-center gap-5">
+                <iconify-icon icon="solar:bag-3-linear" class="text-2xl text-stone-800 hover:text-[#1C1C1C] transition-colors cursor-pointer"></iconify-icon>
+                <div class="w-[1px] h-4 bg-stone-300"></div>
             </div>
         </div>
     </header>
@@ -278,9 +279,9 @@
                     <div class="max-w-xl flex flex-col items-start text-left pointer-events-auto">
                         
                         <!-- Headline -->
-                        <h1 id="headline" class="text-6xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tighter leading-[0.85] text-[#1C1C1C] mb-6 font-display">
+                        <h1 id="headline" class="text-5xl sm:text-6xl md:text-[4.5rem] lg:text-[5rem] font-bold tracking-tighter leading-[0.8] text-[#1C1C1C] mb-5 font-display">
                             A caneta<br/>
-                            <span class="text-outline font-medium tracking-[0.02em]">mais tecnológica</span><br/>
+                            <span class="text-outline tracking-[0.01em] whitespace-nowrap">mais tecnológica</span><br/>
                             do mundo.
                         </h1>
                         
