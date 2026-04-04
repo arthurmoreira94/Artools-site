@@ -232,6 +232,82 @@
             color: transparent;
             -webkit-text-stroke: 1.5px #1C1C1C; /* Borda equilibrada e elegante */
         }
+        
+        /* Premium Flashlight Effect for Cards */
+        .flashlight-card {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02);
+            border-radius: 1.5rem;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .flashlight-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(600px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255, 255, 255, 0.95), transparent 45%);
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .flashlight-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        .flashlight-card:hover::before { opacity: 1; }
+        .flashlight-card:hover { 
+            border-color: #ffffff; 
+            background: rgba(255, 255, 255, 0.7); 
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.06);
+        }
+
+        /* Animated Icon Border (Card Beam) */
+        .card-beam-ring {
+            position: absolute;
+            inset: -2px;
+            border-radius: 9999px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 0;
+        }
+        .card-beam-ring::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 2px;
+            background: conic-gradient(from 0deg, transparent 0 340deg, #1C1C1C 360deg);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            animation: spin 2s linear infinite;
+        }
+        .group:hover .card-beam-ring { opacity: 1; }
+
+        /* Image Mask Reveal */
+        .img-reveal-wrapper {
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(28,28,28,0.1);
+            background-color: #EAEAE5;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05);
+        }
+        .img-reveal-mask {
+            position: absolute;
+            inset: 0;
+            background: #EAEAE5;
+            z-index: 2;
+            transform-origin: right;
+            will-change: transform;
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen selection:bg-stone-800 selection:text-white pb-10">
@@ -318,14 +394,125 @@
         </div>
     </section>
 
-    <!-- Próxima seção (para demonstrar finalização do scroll) -->
-    <section id="discover" class="h-screen bg-stone-100 flex items-center justify-center border-t border-stone-300 relative z-10 flex-col gap-6 text-center px-6">
-        <h2 class="text-4xl md:text-5xl font-semibold tracking-tighter text-stone-900 max-w-2xl font-display reveal-item">
-            Uma obra construída para atravessar gerações.
-        </h2>
-        <p class="text-stone-600 max-w-md mx-auto reveal-item">
-            O fim do hero section. A página segue com a apresentação do produto.
-        </p>
+    <!-- SEGUNDA DOBRA: Funcionalidades Tecnológicas -->
+    <section id="features" class="min-h-screen bg-stone-100 flex flex-col justify-center border-t border-stone-300 relative z-10 py-24 md:py-32 overflow-hidden">
+        <!-- Abstract gradient overlay para um 'glow' sutil no fundo -->
+        <div class="absolute inset-x-0 top-0 h-[500px] bg-gradient-to-b from-white/60 to-transparent pointer-events-none"></div>
+
+        <div class="w-full max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24">
+            
+            <!-- Header Alinhado no Topo -->
+            <div class="mb-16 lg:mb-20 max-w-3xl">
+                <span class="feature-header inline-block text-[0.65rem] font-mono text-stone-400 uppercase tracking-widest mb-4">TECNOLOGIA & PRECISÃO</span>
+                <h2 class="feature-header text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tighter text-stone-900 font-display mb-6 leading-tight">
+                    Controle absoluto<br/>em suas <span class="text-stone-500 italic font-medium">mãos.</span>
+                </h2>
+                <p class="feature-header text-stone-600 text-lg leading-relaxed max-w-lg">
+                    Um centro de comando unificado disfarçado de caneta. Desenvolvida nativamente integrando arte e dados, sem fios, sem limites.
+                </p>
+            </div>
+
+            <!-- Grid Alinhando os Itens e a Imagem -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
+                
+                <!-- Coluna da Esquerda (Imagem Mockup H-Full) -->
+                <div class="col-span-1 lg:col-span-7 h-full min-h-[400px] lg:min-h-0">
+                    <div class="img-reveal-wrapper w-full h-full relative pointer-events-none group rounded-2xl overflow-hidden shadow-sm">
+                        <!-- Imagem sendo mascarada -->
+                        <div class="img-reveal-mask"></div>
+                        <img src="assets/tech_pen_mockup.png" alt="Artools Tech Pen Mockup" class="feature-image w-full h-full object-cover">
+                        
+                        <!-- Overlay Glassmorphism sobre a imagem (UI extra premium) -->
+                        <div class="feature-overlay absolute top-6 right-6 lg:left-6 lg:right-auto p-4 rounded-xl bg-white/30 backdrop-blur-md border border-white/40 shadow-sm flex items-center gap-3">
+                            <span class="relative flex h-3 w-3">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            </span>
+                            <span class="text-xs font-mono uppercase tracking-widest text-[#1C1C1C] font-semibold">Sensores Ativos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna da Direita (Lista de Recursos) -->
+                <div class="col-span-1 lg:col-span-5 flex flex-col justify-between gap-6">
+                    <!-- Item 1 -->
+                    <div class="feature-item flashlight-card p-8 flex flex-col justify-between cursor-pointer group flex-1 h-full" onmousemove="handleFlashlight(event, this)">
+                        <!-- Top Row: Number & Icon -->
+                        <div class="flex justify-between items-start mb-6 w-full">
+                            <div class="flex flex-col">
+                                <span class="text-[0.65rem] font-mono text-stone-400 font-semibold tracking-widest group-hover:text-[#1C1C1C] transition-colors duration-500">01</span>
+                                <span class="w-4 h-[1px] bg-stone-300 mt-2 group-hover:w-full group-hover:bg-[#1C1C1C] transition-all duration-700 ease-out"></span>
+                            </div>
+                            
+                            <div class="relative w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm border border-stone-100 group-hover:border-transparent transition-all duration-500">
+                                <div class="card-beam-ring"></div>
+                                <iconify-icon class="text-2xl text-stone-600 group-hover:text-[#1C1C1C] transition-all duration-500 relative z-10 group-hover:scale-110" icon="solar:cpu-linear"></iconify-icon>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Row: Content -->
+                        <div class="relative z-10 w-full mt-auto">
+                            <h4 class="font-display font-medium text-stone-900 text-xl tracking-tight mb-3 group-hover:translate-x-2 transition-transform duration-500 flex items-center gap-2">
+                                Engenharia Suíça
+                                <iconify-icon icon="solar:arrow-right-linear" class="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 text-[#1C1C1C]"></iconify-icon>
+                            </h4>
+                            <p class="text-sm text-stone-500 leading-relaxed group-hover:text-stone-700 transition-colors duration-500">Precisão micrométrica sob a carcaça. Engrenagens calibradas para eliminar atritos assegurando resposta instantânea em qualquer ângulo.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="feature-item flashlight-card p-8 flex flex-col justify-between cursor-pointer group flex-1 h-full" onmousemove="handleFlashlight(event, this)">
+                        <!-- Top Row: Number & Icon -->
+                        <div class="flex justify-between items-start mb-6 w-full">
+                            <div class="flex flex-col">
+                                <span class="text-[0.65rem] font-mono text-stone-400 font-semibold tracking-widest group-hover:text-[#1C1C1C] transition-colors duration-500">02</span>
+                                <span class="w-4 h-[1px] bg-stone-300 mt-2 group-hover:w-full group-hover:bg-[#1C1C1C] transition-all duration-700 ease-out"></span>
+                            </div>
+                            
+                            <div class="relative w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm border border-stone-100 group-hover:border-transparent transition-all duration-500">
+                                <div class="card-beam-ring"></div>
+                                <iconify-icon class="text-2xl text-stone-600 group-hover:text-[#1C1C1C] transition-all duration-500 relative z-10 group-hover:scale-110" icon="solar:rocket-linear"></iconify-icon>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Row: Content -->
+                        <div class="relative z-10 w-full mt-auto">
+                            <h4 class="font-display font-medium text-stone-900 text-xl tracking-tight mb-3 group-hover:translate-x-2 transition-transform duration-500 flex items-center gap-2">
+                                Alumínio Aeroespacial
+                                <iconify-icon icon="solar:arrow-right-linear" class="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 text-[#1C1C1C]"></iconify-icon>
+                            </h4>
+                            <p class="text-sm text-stone-500 leading-relaxed group-hover:text-stone-700 transition-colors duration-500">Forjada do mesmo composto utilizado em blindagens orbitais. Pesando incríveis 14g, oferece durabilidade brutal sem fatigar a mão.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="feature-item flashlight-card p-8 flex flex-col justify-between cursor-pointer group flex-1 h-full" onmousemove="handleFlashlight(event, this)">
+                        <!-- Top Row: Number & Icon -->
+                        <div class="flex justify-between items-start mb-6 w-full">
+                            <div class="flex flex-col">
+                                <span class="text-[0.65rem] font-mono text-stone-400 font-semibold tracking-widest group-hover:text-[#1C1C1C] transition-colors duration-500">03</span>
+                                <span class="w-4 h-[1px] bg-stone-300 mt-2 group-hover:w-full group-hover:bg-[#1C1C1C] transition-all duration-700 ease-out"></span>
+                            </div>
+                            
+                            <div class="relative w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm border border-stone-100 group-hover:border-transparent transition-all duration-500">
+                                <div class="card-beam-ring"></div>
+                                <iconify-icon class="text-2xl text-stone-600 group-hover:text-[#1C1C1C] transition-all duration-500 relative z-10 group-hover:scale-110" icon="lucide:droplet"></iconify-icon>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Row: Content -->
+                        <div class="relative z-10 w-full mt-auto">
+                            <h4 class="font-display font-medium text-stone-900 text-xl tracking-tight mb-3 group-hover:translate-x-2 transition-transform duration-500 flex items-center gap-2">
+                                Nano-Tinta Fluída™
+                                <iconify-icon icon="solar:arrow-right-linear" class="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 text-[#1C1C1C]"></iconify-icon>
+                            </h4>
+                            <p class="text-sm text-stone-500 leading-relaxed group-hover:text-stone-700 transition-colors duration-500">O fluxo Graphene-Ink adapta-se perfeitamente à pressão exercida, secando em meros 0.1s e conferindo imunidade contra manchas.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </section>
 
 
@@ -431,7 +618,42 @@
                 }
             });
 
+            // 5. Features Section - GSAP Timeline
+            // Criação da linha do tempo para a 2ª dobra com animação clara de entrada e saída
+            const tlFeatures = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "#features",
+                    start: "top 75%", // Inicia a entrada quando o topo passa por 75% da altura da viewport
+                    end: "bottom 30%", // Inicia a saída quando o fundo passa por 30% da altura
+                    toggleActions: "play reverse play reverse", // Entrada e saída perfeitas ao scrollar em ambas as direções
+                }
+            });
+
+            // Setando estados iniciais
+            gsap.set('.feature-header', { opacity: 0, y: 30 });
+            gsap.set('.feature-item', { opacity: 0, x: -30 });
+            gsap.set('.feature-image', { scale: 1.15, opacity: 0 });
+            gsap.set('.img-reveal-mask', { scaleX: 1 });
+            gsap.set('.feature-overlay', { opacity: 0, y: 15, scale: 0.95 });
+
+            // Coreografia de Entrada / Saída
+            tlFeatures
+                .to('.feature-header', { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: 'power3.out' })
+                .to('.img-reveal-mask', { scaleX: 0, duration: 1.2, ease: 'power4.inOut' }, "-=0.6")
+                .to('.feature-image', { opacity: 1, scale: 1, duration: 1.4, ease: 'power2.out' }, "-=1")
+                .to('.feature-item', { opacity: 1, x: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out' }, "-=1.2")
+                .to('.feature-overlay', { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'back.out(1.5)' }, "-=0.7");
+
         });
+
+        // Spotlight Handler Global for Cards
+        window.handleFlashlight = function(e, element) {
+            const rect = element.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            element.style.setProperty('--mouse-x', `${x}px`);
+            element.style.setProperty('--mouse-y', `${y}px`);
+        };
     </script>
 </body>
 </html>
