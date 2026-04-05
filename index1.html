@@ -420,23 +420,17 @@
                 ARTOOLS<span class="font-light text-stone-500">.PRO</span>
             </div>
             
-            <!-- Navigation Links -->
             <nav class="hidden md:flex gap-10 text-xs font-mono uppercase tracking-widest font-bold text-stone-600">
-                <a href="#" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">Design</a>
-                <a href="#" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">Technology</a>
-                <a href="#" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">Specs</a>
+                <a href="#hero-section" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">A Caneta</a>
+                <a href="#features" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">Tecnologia</a>
+                <a href="#pure-flow" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">O Fluxo</a>
+                <a href="#cta" class="hover:text-[#1C1C1C] hover:scale-105 transition-all">Acesso</a>
             </nav>
             
             <!-- Mobile Toggle -->
-            <button class="md:hidden">
+            <button class="md:hidden ml-auto">
                 <iconify-icon icon="solar:hamburger-menu-linear" class="text-3xl"></iconify-icon>
             </button>
-            
-            <!-- Bag Actions & Divider -->
-            <div class="hidden md:flex items-center gap-5">
-                <iconify-icon icon="solar:bag-3-linear" class="text-2xl text-stone-800 hover:text-[#1C1C1C] transition-colors cursor-pointer"></iconify-icon>
-                <div class="w-[1px] h-4 bg-stone-300"></div>
-            </div>
         </div>
     </header>
 
@@ -472,7 +466,7 @@
                                 Comprar Agora
                             </button>
                             
-                            <a href="#discover" class="btn-outline px-8 py-3.5 text-xs font-bold tracking-widest flex items-center justify-center gap-3 w-full sm:w-auto">
+                            <a href="#features" class="btn-outline px-8 py-3.5 text-xs font-bold tracking-widest flex items-center justify-center gap-3 w-full sm:w-auto">
                                 Explorar <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
                             </a>
                         </div>
@@ -876,27 +870,31 @@
 
 
             // 4. Nova Tech Stack Premium: ScrollyVideo via WebCodecs API
-            // Substitui totalmente o canvas/video nativo limitados. O WebCodecs força a placa 
-            // de vídeo local a triturar o arquivo por Quadros Perfeitos de hardware (O "Padrão Apple").
-            
             const scrollyVideo = new ScrollyVideo({
                 scrollyVideoContainer: "hero-scrolly-video", // Container onde o vídeo mora no DOM
                 src: "assets/videos/video.mp4",
-                useScroll: false, // Quem vai controlar o scroll é nosso maestro GSAP pra manter as transições perfeitas do Lenis
-                cover: true       // Estica de forma "object-fit: cover"
+                useScroll: false, // Quem vai controlar o scroll é nosso maestro GSAP
+                cover: true,      // Estica de forma "object-fit: cover"
+                transitionSpeed: 0 // Garantimos que o GSAP tenha plenos poderes sobre o tempo 
             });
 
-            // Conectamos diretamente o ScrollTrigger da página com a % do ScrollyVideo
-            ScrollTrigger.create({
-                trigger: "#hero-section",
-                start: "top top",
-                end: "bottom bottom",
-                scrub: true, // Scrub purista zero delay, pois o scrolly faz seu próprio frame-smoothing
-                onUpdate: (self) => {
-                    if (scrollyVideo) {
-                        try {
-                            scrollyVideo.setTargetTimePercent(self.progress);
-                        } catch(e) {}
+            // Usar um Proxy Object injeta inércia (smoothing) no progresso antes de passar para o vídeo
+            const videoScrollProxy = { percent: 0 };
+            
+            gsap.to(videoScrollProxy, {
+                percent: 1,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "#hero-section",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1.5, // 1.5 segundos de desaceleração elástica "Buttery Smooth"
+                    onUpdate: () => {
+                        if (scrollyVideo) {
+                            try {
+                                scrollyVideo.setTargetTimePercent(videoScrollProxy.percent);
+                            } catch(e) {}
+                        }
                     }
                 }
             });
@@ -980,6 +978,17 @@
                 duration: 1.2,
                 stagger: 0.2,
                 ease: "power3.out"
+            });
+
+            // Smooth Scroll for navigation links using Lenis
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const target = this.getAttribute('href');
+                    if (target !== "#") {
+                        e.preventDefault();
+                        lenis.scrollTo(target, { offset: 0, duration: 1.5, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+                    }
+                });
             });
 
         });

@@ -231,26 +231,23 @@
                         class="text-stone-400">.PRO</span></span>
             </div>
 
-            <!-- Nav Links -->
             <nav class="hidden md:flex items-center gap-8 text-xs font-mono uppercase tracking-widest text-stone-500">
-                <a href="#" class="hover:text-stone-900 transition-colors">Design</a>
-                <a href="#" class="hover:text-stone-900 transition-colors">Technology</a>
-                <a href="#" class="hover:text-stone-900 transition-colors">Specs</a>
+                <a href="#hero-section" class="hover:text-stone-900 transition-colors">A Caneta</a>
+                <a href="#tech-specs" class="hover:text-stone-900 transition-colors">Tecnologia</a>
+                <a href="#experience" class="hover:text-stone-900 transition-colors">Experiência</a>
+                <a href="#showcase" class="hover:text-stone-900 transition-colors">Acesso</a>
             </nav>
 
             <!-- Action -->
             <div class="flex items-center gap-4">
-                <iconify-icon icon="solar:bag-linear"
-                    class="text-xl cursor-pointer hover:text-stone-500 transition-colors"></iconify-icon>
-                <div class="hidden md:block w-px h-4 bg-stone-300"></div>
                 <iconify-icon icon="solar:hamburger-menu-linear"
-                    class="text-xl cursor-pointer md:hidden hover:text-stone-500 transition-colors"></iconify-icon>
+                    class="text-xl cursor-pointer md:hidden hover:text-stone-500 transition-colors ml-auto"></iconify-icon>
             </div>
         </div>
     </header>
 
     <!-- HERO SECTION -->
-    <main class="hero-scrub-container relative bg-[#EAEAE5]">
+    <main id="hero-section" class="hero-scrub-container relative bg-[#EAEAE5]">
         <div class="sticky top-0 h-screen w-full overflow-hidden">
 
             <!-- VIDEO CENTERPIECE (Canvas Background) -->
@@ -468,7 +465,7 @@
     </section>
 
     <!-- 3. WRITING EXPERIENCE (FLASHLIGHT CARDS) -->
-    <section class="relative z-20 bg-[#EAEAE5] py-24 md:py-32 overflow-hidden border-t border-stone-300">
+    <section id="experience" class="relative z-20 bg-[#EAEAE5] py-24 md:py-32 overflow-hidden border-t border-stone-300">
         <div class="max-w-[1440px] mx-auto px-6 md:px-24">
 
             <div class="text-center mb-24 reveal-up">
@@ -552,7 +549,7 @@
     </section>
 
     <!-- 4. CINEMATIC SHOWCASE (GLOW EFFECT) -->
-    <section class="h-screen w-full relative overflow-hidden flex items-center justify-center bg-stone-900">
+    <section id="showcase" class="h-screen w-full relative overflow-hidden flex items-center justify-center bg-stone-900">
         <!-- Background Video -->
         <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover opacity-60">
             <source src="assets/videos/video.mp4" type="video/mp4">
@@ -737,11 +734,28 @@
                     trigger: ".hero-scrub-container",
                     start: "top top",
                     end: "bottom bottom",
-                    scrub: 0, // Instant response (canvas is fast enough)
+                    scrub: 1.5, // Adicionado 1.5s de inércia para efeito amanteigado (Substitui scrub: 0 anterior)
                     onUpdate: () => {
                         requestAnimationFrame(render);
                     }
                 }
+            });
+
+            // Anchor tag smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const target = this.getAttribute('href');
+                    if (target !== "#") {
+                        e.preventDefault();
+                        const dest = document.querySelector(target);
+                        if (dest) {
+                            window.scrollTo({
+                                top: dest.offsetTop,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
             });
         });
 
