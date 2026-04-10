@@ -896,44 +896,60 @@
             );
 
 
-            // 4. Nova Tech Stack Premium: ScrollyVideo via WebCodecs API
-            // Fix Vercel Lag: Baixamos o vídeo inteiro pra memória (Blob) antes de iniciar
-            // Isso previne que a Vercel engasgue com múltiplas requisições de range ao scrollar
-            fetch("assets/videos/video.mp4")
-                .then(response => response.blob())
-                .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    
-                    const scrollyVideo = new ScrollyVideo({
-                        scrollyVideoContainer: "hero-scrolly-video", 
-                        src: blobUrl,
-                        useScroll: false, 
-                        cover: true,      
-                        transitionSpeed: 0,
-                        fullplayback: true // Garante que WebCodecs use toda a memória se possível
-                    });
+            // 4. Nova Tech Stack Premium: ScrollyVideo API 
+            // Resolvemos dois problemas: rodar localmente sem servidor (file://) sem sumir o vídeo 
+            // e previnir engasmos nas requisições da Vercel (CDNs) cacheando antecipadamente
+            
+            const isLocal = window.location.protocol === 'file:';
+            const videoSrc = "assets/videos/video.mp4";
 
-                    const videoScrollProxy = { percent: 0 };
-                    
-                    gsap.to(videoScrollProxy, {
-                        percent: 1,
-                        ease: "none",
-                        scrollTrigger: {
-                            trigger: "#hero-section",
-                            start: "top top",
-                            end: "bottom bottom",
-                            scrub: 1.5, 
-                            onUpdate: () => {
-                                if (scrollyVideo) {
-                                    try {
-                                        scrollyVideo.setTargetTimePercent(videoScrollProxy.percent);
-                                    } catch(e) {}
-                                }
+            const initVideoProxy = (src) => {
+                const scrollyVideo = new ScrollyVideo({
+                    scrollyVideoContainer: "hero-scrolly-video", 
+                    src: src,
+                    useScroll: false, 
+                    cover: true,      
+                    transitionSpeed: 0 // Controle absoluto pelo GSAP
+                });
+
+                const videoScrollProxy = { percent: 0 };
+                
+                gsap.to(videoScrollProxy, {
+                    percent: 1,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: "#hero-section",
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: 1.5, 
+                        onUpdate: () => {
+                            if (scrollyVideo) {
+                                try {
+                                    scrollyVideo.setTargetTimePercent(videoScrollProxy.percent);
+                                } catch(e) {}
                             }
                         }
+                    }
+                });
+            };
+
+            if (isLocal) {
+                // Se rodar apenas o index.html (Double Click), usamos a tag direta. Não há lag de CDN aqui de qualquer forma.
+                initVideoProxy(videoSrc);
+            } else {
+                // Se estiver na Vercel (HTTPS), pré-baixamos integralmente a mp4 em background 
+                // garantindo carregamento em bloco único sem range-requests parciais que causam stutter.
+                fetch(videoSrc)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const blobUrl = URL.createObjectURL(blob);
+                        initVideoProxy(blobUrl);
+                    })
+                    .catch(err => {
+                        console.log("Fallback: ", err);
+                        initVideoProxy(videoSrc);
                     });
-                })
-                .catch(err => console.error("Error loading video blob for Scrolly:", err));
+            }
 
             // 5. Features Section - GSAP Timeline
             // Criação da linha do tempo para a 2ª dobra com animação clara de entrada e saída
