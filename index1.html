@@ -407,13 +407,40 @@
         .animate-scroll-vertical:hover {
             animation-play-state: paused;
         }
+
+        /* Smart Floating Header Styles */
+        #main-header.scrolled {
+            padding-top: 1rem !important;
+            padding-bottom: 0 !important;
+        }
+        
+        .header-inner {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid transparent;
+        }
+
+        #main-header.scrolled .header-inner {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-radius: 9999px; /* Formato de pílula absoluta */
+            max-width: 1000px; /* Encolhe e centraliza */
+        }
+
+        #main-header.hide-up {
+            transform: translateY(-120%) !important;
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen selection:bg-stone-800 selection:text-white pb-10">
 
     <!-- Navbar minimalista sobreposta -->
-    <header class="fixed top-0 left-0 w-full z-50 py-8 text-stone-900 opacity-0 load-anim translate-y-[-10px] pointer-events-none">
-        <div class="w-full max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24 flex justify-between items-center bg-transparent pointer-events-auto">
+    <header id="main-header" class="fixed top-0 left-0 w-full z-50 py-8 text-stone-900 opacity-0 load-anim translate-y-[-10px] pointer-events-none transition-all duration-500 ease-out">
+        <div class="header-inner w-full max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24 flex justify-between items-center pointer-events-auto">
             <!-- Brand Logo -->
             <div class="font-bold tracking-tighter text-xl flex items-center gap-2">
                 <div class="bg-[#1C1C1C] text-white w-6 h-6 flex items-center justify-center rounded-sm text-xs"><iconify-icon icon="solar:pen-linear"></iconify-icon></div>
@@ -848,7 +875,7 @@
 
             // Scroll Out Effect (Out-Effect) idêntico à animação de entrada mas invertido para sumir com o scroll
             // Usamos fromTo com immediateRender: false para não sobrescrever a memória da timeline de intro!
-            gsap.fromTo(['.text-content', '.load-anim'], 
+            gsap.fromTo(['.text-content'], 
                 { 
                     y: "0rem", scale: 1, opacity: 1, filter: "blur(0px)" 
                 },
@@ -989,6 +1016,25 @@
                         lenis.scrollTo(target, { offset: 0, duration: 1.5, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
                     }
                 });
+            });
+
+            // Smart Floating Header Logic
+            const header = document.getElementById('main-header');
+            
+            // Remover 'py-8' padrão quando o estilo .scrolled assumir
+            lenis.on('scroll', (e) => {
+                const scrollY = window.scrollY;
+                
+                // Muta para pílula flutuante a partir de 50px de scroll
+                if (scrollY > 50) {
+                    header.classList.add('scrolled');
+                    header.classList.remove('py-8');
+                } else {
+                    header.classList.remove('scrolled');
+                    header.classList.add('py-8');
+                }
+                
+                // O header agora é fixo e sempre visível
             });
 
         });
