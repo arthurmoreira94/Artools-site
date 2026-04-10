@@ -897,34 +897,43 @@
 
 
             // 4. Nova Tech Stack Premium: ScrollyVideo via WebCodecs API
-            const scrollyVideo = new ScrollyVideo({
-                scrollyVideoContainer: "hero-scrolly-video", // Container onde o vídeo mora no DOM
-                src: "assets/videos/video.mp4",
-                useScroll: false, // Quem vai controlar o scroll é nosso maestro GSAP
-                cover: true,      // Estica de forma "object-fit: cover"
-                transitionSpeed: 0 // Garantimos que o GSAP tenha plenos poderes sobre o tempo 
-            });
+            // Fix Vercel Lag: Baixamos o vídeo inteiro pra memória (Blob) antes de iniciar
+            // Isso previne que a Vercel engasgue com múltiplas requisições de range ao scrollar
+            fetch("assets/videos/video.mp4")
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    const scrollyVideo = new ScrollyVideo({
+                        scrollyVideoContainer: "hero-scrolly-video", 
+                        src: blobUrl,
+                        useScroll: false, 
+                        cover: true,      
+                        transitionSpeed: 0,
+                        fullplayback: true // Garante que WebCodecs use toda a memória se possível
+                    });
 
-            // Usar um Proxy Object injeta inércia (smoothing) no progresso antes de passar para o vídeo
-            const videoScrollProxy = { percent: 0 };
-            
-            gsap.to(videoScrollProxy, {
-                percent: 1,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: "#hero-section",
-                    start: "top top",
-                    end: "bottom bottom",
-                    scrub: 1.5, // 1.5 segundos de desaceleração elástica "Buttery Smooth"
-                    onUpdate: () => {
-                        if (scrollyVideo) {
-                            try {
-                                scrollyVideo.setTargetTimePercent(videoScrollProxy.percent);
-                            } catch(e) {}
+                    const videoScrollProxy = { percent: 0 };
+                    
+                    gsap.to(videoScrollProxy, {
+                        percent: 1,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: "#hero-section",
+                            start: "top top",
+                            end: "bottom bottom",
+                            scrub: 1.5, 
+                            onUpdate: () => {
+                                if (scrollyVideo) {
+                                    try {
+                                        scrollyVideo.setTargetTimePercent(videoScrollProxy.percent);
+                                    } catch(e) {}
+                                }
+                            }
                         }
-                    }
-                }
-            });
+                    });
+                })
+                .catch(err => console.error("Error loading video blob for Scrolly:", err));
 
             // 5. Features Section - GSAP Timeline
             // Criação da linha do tempo para a 2ª dobra com animação clara de entrada e saída
