@@ -434,6 +434,15 @@
         #main-header.hide-up {
             transform: translateY(-120%) !important;
         }
+        
+        /* Retira o box-shadow e borrão da pílula de navegação quando a cortina do menu mobile se abrir */
+        #main-header.menu-open .header-inner {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen selection:bg-stone-800 selection:text-white pb-10">
@@ -455,19 +464,37 @@
             </nav>
             
             <!-- Mobile Toggle -->
-            <button id="mobile-menu-btn" class="md:hidden ml-auto z-[60] relative transition-transform active:scale-95">
-                <iconify-icon icon="solar:hamburger-menu-linear" class="text-3xl text-stone-900"></iconify-icon>
+            <button id="mobile-menu-btn" class="md:hidden ml-auto z-[60] relative transition-all active:scale-90 hover:opacity-70">
+                <iconify-icon icon="solar:hamburger-menu-linear" class="text-4xl text-stone-900"></iconify-icon>
             </button>
         </div>
 
-        <!-- Mobile Menu Overlay -->
-        <div id="mobile-menu" class="fixed inset-0 bg-white/95 backdrop-blur-xl z-[45] flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
-            <nav class="flex flex-col gap-8 text-center text-xl font-mono uppercase tracking-widest font-bold text-stone-900 pointer-events-auto">
-                <a href="#hero-section" class="mobile-link hover:text-stone-500 transition-colors">A Caneta</a>
-                <a href="#features" class="mobile-link hover:text-stone-500 transition-colors">Tecnologia</a>
-                <a href="#pure-flow" class="mobile-link hover:text-stone-500 transition-colors">O Fluxo</a>
-                <a href="#cta" class="mobile-link hover:text-stone-500 transition-colors">Acesso</a>
+        <!-- Mobile Menu Overlay Premium -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#EAEAE5]/95 backdrop-blur-3xl z-[45] flex flex-col px-8 justify-center pointer-events-none" style="clip-path: inset(0% 0% 100% 0%);">
+            <nav class="flex flex-col gap-6 text-left w-full mt-10">
+                <div class="overflow-hidden py-1">
+                    <a href="#hero-section" class="mobile-link mobile-reveal block text-[13vw] font-display font-medium tracking-tighter text-[#1C1C1C] leading-[0.8] origin-left" style="transform: translateY(120%) rotate(4deg); opacity: 0;">A Caneta.</a>
+                </div>
+                <div class="overflow-hidden py-1">
+                    <a href="#features" class="mobile-link mobile-reveal block text-[13vw] font-display font-medium tracking-tighter text-[#1C1C1C] leading-[0.8] origin-left" style="transform: translateY(120%) rotate(4deg); opacity: 0;">Tecnologia.</a>
+                </div>
+                <div class="overflow-hidden py-1">
+                    <a href="#pure-flow" class="mobile-link mobile-reveal block text-[13vw] font-display font-medium tracking-tighter text-[#1C1C1C] leading-[0.8] origin-left" style="transform: translateY(120%) rotate(4deg); opacity: 0;">O Fluxo.</a>
+                </div>
+                <div class="overflow-hidden py-1">
+                    <a href="#cta" class="mobile-link mobile-reveal block text-[13vw] font-display font-medium tracking-tighter text-[#1C1C1C] leading-[0.8] origin-left" style="transform: translateY(120%) rotate(4deg); opacity: 0;">Acesso.</a>
+                </div>
             </nav>
+            
+            <div class="mt-20 overflow-hidden">
+                <div class="mobile-reveal flex flex-col gap-4" style="transform: translateY(100%); opacity: 0;">
+                    <div class="w-full h-[1px] bg-stone-300"></div>
+                    <div class="flex justify-between items-center text-stone-500">
+                        <span class="text-[0.65rem] font-mono tracking-widest uppercase">Premium Edition</span>
+                        <iconify-icon icon="solar:cup-star-linear" class="text-lg"></iconify-icon>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -834,25 +861,52 @@
     <script>
         document.addEventListener("DOMContentLoaded", (event) => {
             
-            // 0. Menu Mobile Responsivo (Comportamento de Toggle)
+            // 1. Iniciar GSAP Plugins
+            gsap.registerPlugin(ScrollTrigger);
+
+            // 0. Menu Mobile Responsivo (Coreografia Premium GSAP)
             const mobileBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
             const mobileLinks = document.querySelectorAll('.mobile-link');
             const menuIcon = mobileBtn ? mobileBtn.querySelector('iconify-icon') : null;
             let isMenuOpen = false;
 
+            // Criamos a linha do tempo GSAP pro menu flutuante e escondemos a rolagem
+            const tlMenu = gsap.timeline({ paused: true, reversed: true });
+            
+            tlMenu
+                .to(mobileMenu, {
+                    clipPath: "inset(0% 0% 0% 0%)",
+                    duration: 0.8,
+                    ease: "power4.inOut" // Abertura "arrastante" elegante (estilo Apple)
+                })
+                .to('.mobile-reveal', {
+                    y: "0%",
+                    opacity: 1,
+                    rotate: 0,
+                    duration: 0.8,
+                    stagger: 0.08,
+                    ease: "power3.out"
+                }, "-=0.4"); // As letras começam a subir antes mesmo do fundo descer completamente
+
             const toggleMenu = () => {
                 isMenuOpen = !isMenuOpen;
+                const headerLayer = document.getElementById('main-header');
+
                 if (isMenuOpen) {
-                    mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
-                    mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+                    mobileMenu.classList.remove('pointer-events-none');
+                    mobileMenu.classList.add('pointer-events-auto');
                     menuIcon.setAttribute('icon', 'solar:close-circle-linear');
-                    document.body.style.overflow = 'hidden'; // Evita rolagem da página por baixo do menu
+                    document.body.style.overflow = 'hidden'; 
+                    headerLayer.classList.add('menu-open'); // Remove formato pílula
+                    tlMenu.play();
                 } else {
-                    mobileMenu.classList.add('opacity-0', 'pointer-events-none');
-                    mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+                    mobileMenu.classList.add('pointer-events-none');
+                    mobileMenu.classList.remove('pointer-events-auto');
                     menuIcon.setAttribute('icon', 'solar:hamburger-menu-linear');
                     document.body.style.overflow = '';
+                    headerLayer.classList.remove('menu-open'); // Devolve formato pílula
+                    tlMenu.reverse();
                 }
             };
 
@@ -860,9 +914,6 @@
                 mobileBtn.addEventListener('click', toggleMenu);
                 mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
             }
-
-            // 1. Iniciar GSAP Plugins
-            gsap.registerPlugin(ScrollTrigger);
 
             // 2. Configurar Biblioteca Lenis (Scroll Suave Estilo Premium)
             const lenis = new Lenis({
