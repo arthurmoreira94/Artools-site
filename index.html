@@ -901,7 +901,7 @@
             // e previnir engasmos nas requisições da Vercel (CDNs) cacheando antecipadamente
             
             const isLocal = window.location.protocol === 'file:';
-            const videoSrc = "assets/videos/video.webm";
+            const videoSrc = "assets/videos/video.mp4";
 
             const initVideoProxy = (src) => {
                 const scrollyVideo = new ScrollyVideo({
@@ -949,7 +949,7 @@
                 // Se rodar apenas o index.html (Double Click), usamos a tag direta. Não há lag de CDN aqui de qualquer forma.
                 initVideoProxy(videoSrc);
             } else {
-                // Se estiver na Vercel (HTTPS), pré-baixamos integralmente a versão .webm em background 
+                // Se estiver na Vercel (HTTPS), pré-baixamos integralmente a versão .mp4 em background 
                 // garantindo carregamento em bloco único sem range-requests parciais que causam stutter.
                 fetch(videoSrc)
                     .then(response => response.blob())
