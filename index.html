@@ -469,34 +469,35 @@
             </button>
         </div>
 
-        <!-- Mobile Menu Overlay Premium -->
-        <div id="mobile-menu" class="fixed inset-0 bg-[#EAEAE5]/95 backdrop-blur-3xl z-[45] flex flex-col px-8 justify-center pointer-events-none" style="clip-path: inset(0% 0% 100% 0%);">
-            <nav class="flex flex-col gap-6 text-left w-full mt-10">
-                <div class="overflow-hidden py-1">
-                    <a href="#hero-section" class="mobile-link mobile-reveal block text-[13vw] font-display font-medium tracking-tighter text-[#1C1C1C] leading-[0.8] origin-left" style="transform: translateY(120%) rotate(4deg); opacity: 0;">A Caneta.</a>
-                </div>
-                <div class="overflow-hidden py-1">
-                    <a href="#features" class="mobile-link mobile-reveal block text-[13vw] font-display font-medium tracking-tighter text-[#1C1C1C] leading-[0.8] origin-left" style="transform: translateY(120%) rotate(4deg); opacity: 0;">Tecnologia.</a>
-                </div>
-                <div class="overflow-hidden py-1">
-                    <a href="#pure-flow" class="mobile-link mobile-reveal block text-[13vw] font-display font-medium tracking-tighter text-[#1C1C1C] leading-[0.8] origin-left" style="transform: translateY(120%) rotate(4deg); opacity: 0;">O Fluxo.</a>
-                </div>
-                <div class="overflow-hidden py-1">
-                    <a href="#cta" class="mobile-link mobile-reveal block text-[13vw] font-display font-medium tracking-tighter text-[#1C1C1C] leading-[0.8] origin-left" style="transform: translateY(120%) rotate(4deg); opacity: 0;">Acesso.</a>
-                </div>
-            </nav>
-            
-            <div class="mt-20 overflow-hidden">
-                <div class="mobile-reveal flex flex-col gap-4" style="transform: translateY(100%); opacity: 0;">
-                    <div class="w-full h-[1px] bg-stone-300"></div>
-                    <div class="flex justify-between items-center text-stone-500">
-                        <span class="text-[0.65rem] font-mono tracking-widest uppercase">Premium Edition</span>
-                        <iconify-icon icon="solar:cup-star-linear" class="text-lg"></iconify-icon>
-                    </div>
-                </div>
-            </div>
         </div>
     </header>
+
+    <!-- Mobile Menu Overlay Premium (Movido para fora do Header para preencher a tela 100% livre dos bounds do pai) -->
+    <div id="mobile-menu" class="fixed inset-0 w-full h-[100dvh] bg-[#EAEAE5]/95 backdrop-blur-3xl z-[45] flex flex-col items-center justify-center pointer-events-none" style="clip-path: inset(0% 0% 100% 0%);">
+        
+        <nav class="flex flex-col gap-10 text-center w-full">
+            <div class="overflow-hidden py-2">
+                <a href="#hero-section" class="mobile-link mobile-reveal font-mono uppercase tracking-widest text-[#1C1C1C] font-bold text-2xl inline-block" style="transform: translateY(100%); opacity: 0;">A Caneta</a>
+            </div>
+            <div class="overflow-hidden py-2">
+                <a href="#features" class="mobile-link mobile-reveal font-mono uppercase tracking-widest text-[#1C1C1C] font-bold text-2xl inline-block" style="transform: translateY(100%); opacity: 0;">Tecnologia</a>
+            </div>
+            <div class="overflow-hidden py-2">
+                <a href="#pure-flow" class="mobile-link mobile-reveal font-mono uppercase tracking-widest text-[#1C1C1C] font-bold text-2xl inline-block" style="transform: translateY(100%); opacity: 0;">O Fluxo</a>
+            </div>
+            <div class="overflow-hidden py-2">
+                <a href="#cta" class="mobile-link mobile-reveal font-mono uppercase tracking-widest text-[#1C1C1C] font-bold text-2xl inline-block" style="transform: translateY(100%); opacity: 0;">Acesso</a>
+            </div>
+        </nav>
+        
+        <!-- Rodapé do Overlay -->
+        <div class="absolute bottom-12 overflow-hidden">
+            <div class="mobile-reveal flex flex-col items-center gap-4" style="transform: translateY(100%); opacity: 0;">
+                <iconify-icon icon="solar:pen-linear" class="text-3xl text-[#1C1C1C]"></iconify-icon>
+                <span class="text-[0.65rem] font-mono tracking-widest uppercase text-[#1C1C1C]/50">Premium Edition</span>
+            </div>
+        </div>
+    </div>
 
     <section class="hero-section" id="hero-section">
         <div class="sticky-container">
@@ -511,8 +512,8 @@
                 <div class="w-full max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24 text-content">
                     <div class="max-w-xl flex flex-col items-start text-left pointer-events-auto">
                         
-                        <!-- Headline (Responsivo) -->
-                        <h1 id="headline" class="text-[10vw] sm:text-6xl md:text-[4.5rem] lg:text-[5rem] font-bold tracking-tighter leading-[1] md:leading-[0.8] text-[#1C1C1C] mb-5 font-display">
+                        <!-- Headline (Responsivo e com respiro Vertical) -->
+                        <h1 id="headline" class="text-[10vw] sm:text-6xl md:text-[4.5rem] lg:text-[5rem] font-bold tracking-tighter leading-[1.05] md:leading-[0.95] text-[#1C1C1C] mb-5 font-display">
                             A caneta<br/>
                             <span class="text-outline tracking-[0.01em] whitespace-nowrap">mais tecnológica</span><br/>
                             do mundo.
