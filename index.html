@@ -474,8 +474,8 @@
                 <div class="w-full max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24 text-content">
                     <div class="max-w-xl flex flex-col items-start text-left pointer-events-auto">
                         
-                        <!-- Headline -->
-                        <h1 id="headline" class="text-5xl sm:text-6xl md:text-[4.5rem] lg:text-[5rem] font-bold tracking-tighter leading-[0.8] text-[#1C1C1C] mb-5 font-display">
+                        <!-- Headline (Responsivo) -->
+                        <h1 id="headline" class="text-[10vw] sm:text-6xl md:text-[4.5rem] lg:text-[5rem] font-bold tracking-tighter leading-[1] md:leading-[0.8] text-[#1C1C1C] mb-5 font-display">
                             A caneta<br/>
                             <span class="text-outline tracking-[0.01em] whitespace-nowrap">mais tecnológica</span><br/>
                             do mundo.
@@ -517,12 +517,12 @@
     <!-- SEGUNDA DOBRA: Funcionalidades Tecnológicas -->
     <section id="features" class="min-h-screen bg-white flex flex-col justify-center border-t border-stone-200 relative z-10 py-24 md:py-32 overflow-hidden">
         
-        <!-- O Novo "Efeito Bonito": Premium Mesh Blur Orbs -->
+        <!-- O Novo "Efeito Bonito": Premium Mesh Blur Orbs (Otimizado para não travar GPU mobile) -->
         <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-80">
              <!-- Subtly animated gradient blobs acting as a premium aura -->
-             <div class="absolute top-[0%] left-[10%] w-[50vw] h-[50vw] bg-neutral-200/60 rounded-full blur-[100px] animate-pulse" style="animation-duration: 8s;"></div>
-             <div class="absolute -bottom-[20%] right-[10%] w-[60vw] h-[60vw] bg-stone-200/50 rounded-full blur-[120px] animate-pulse" style="animation-duration: 12s;"></div>
-             <div class="absolute top-[40%] left-[70%] w-[40vw] h-[40vw] bg-white rounded-full blur-[80px] animate-pulse" style="animation-duration: 15s;"></div>
+             <div class="absolute top-[0%] left-[10%] w-[50vw] h-[50vw] bg-neutral-200/60 rounded-full blur-[60px] md:blur-[100px] md:animate-pulse" style="animation-duration: 8s;"></div>
+             <div class="absolute -bottom-[20%] right-[10%] w-[60vw] h-[60vw] bg-stone-200/50 rounded-full blur-[60px] md:blur-[120px] md:animate-pulse" style="animation-duration: 12s;"></div>
+             <div class="absolute top-[40%] left-[70%] w-[40vw] h-[40vw] bg-white rounded-full blur-[40px] md:blur-[80px] md:animate-pulse" style="animation-duration: 15s;"></div>
         </div>
         
         <!-- Blueprint Fine Grid Pattern (Diminished to look elegant on pure white) -->
@@ -897,10 +897,10 @@
 
 
             // 4. Nova Tech Stack Premium: ScrollyVideo API 
-            // Resolvemos dois problemas: rodar localmente sem servidor (file://) sem sumir o vídeo 
-            // e previnir engasmos nas requisições da Vercel (CDNs) cacheando antecipadamente
+            // Resolvemos problemas de engasgo nativo e mobile streaming
             
             const isLocal = window.location.protocol === 'file:';
+            const isMobile = window.matchMedia("(max-width: 768px)").matches;
             const videoSrc = "assets/videos/video.webm";
 
             const initVideoProxy = (src) => {
@@ -933,7 +933,7 @@
                         trigger: "#hero-section",
                         start: "top top",
                         end: "bottom bottom",
-                        scrub: 1.5, 
+                        scrub: isMobile ? true : 1.5, // Remove atraso de interpolação no processador fraco do Celular
                         onUpdate: () => {
                             if (scrollyVideo) {
                                 try {
@@ -945,11 +945,12 @@
                 });
             };
 
-            if (isLocal) {
-                // Se rodar apenas o index.html (Double Click), usamos a tag direta. Não há lag de CDN aqui de qualquer forma.
+            if (isLocal || isMobile) {
+                // Em mobile, processar um Blob de memória na RAM cria swapping agressivo e engasga todo o javascript.
+                // Ao direcionar o link direto, o próprio hardware do iOS/Android fragmenta na GPU nativamente!
                 initVideoProxy(videoSrc);
             } else {
-                // Se estiver na Vercel (HTTPS), pré-baixamos integralmente a versão .webm em background 
+                // Se estiver na Vercel (HTTPS) no Computador Alto Desempenho, pré-baixamos integralmente a versão .webm 
                 // garantindo carregamento em bloco único sem range-requests parciais que causam stutter.
                 fetch(videoSrc)
                     .then(response => response.blob())
