@@ -455,9 +455,19 @@
             </nav>
             
             <!-- Mobile Toggle -->
-            <button class="md:hidden ml-auto">
-                <iconify-icon icon="solar:hamburger-menu-linear" class="text-3xl"></iconify-icon>
+            <button id="mobile-menu-btn" class="md:hidden ml-auto z-[60] relative transition-transform active:scale-95">
+                <iconify-icon icon="solar:hamburger-menu-linear" class="text-3xl text-stone-900"></iconify-icon>
             </button>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-white/95 backdrop-blur-xl z-[45] flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+            <nav class="flex flex-col gap-8 text-center text-xl font-mono uppercase tracking-widest font-bold text-stone-900 pointer-events-auto">
+                <a href="#hero-section" class="mobile-link hover:text-stone-500 transition-colors">A Caneta</a>
+                <a href="#features" class="mobile-link hover:text-stone-500 transition-colors">Tecnologia</a>
+                <a href="#pure-flow" class="mobile-link hover:text-stone-500 transition-colors">O Fluxo</a>
+                <a href="#cta" class="mobile-link hover:text-stone-500 transition-colors">Acesso</a>
+            </nav>
         </div>
     </header>
 
@@ -824,6 +834,33 @@
     <script>
         document.addEventListener("DOMContentLoaded", (event) => {
             
+            // 0. Menu Mobile Responsivo (Comportamento de Toggle)
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+            const menuIcon = mobileBtn ? mobileBtn.querySelector('iconify-icon') : null;
+            let isMenuOpen = false;
+
+            const toggleMenu = () => {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+                    mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+                    menuIcon.setAttribute('icon', 'solar:close-circle-linear');
+                    document.body.style.overflow = 'hidden'; // Evita rolagem da página por baixo do menu
+                } else {
+                    mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+                    mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+                    menuIcon.setAttribute('icon', 'solar:hamburger-menu-linear');
+                    document.body.style.overflow = '';
+                }
+            };
+
+            if (mobileBtn) {
+                mobileBtn.addEventListener('click', toggleMenu);
+                mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
+            }
+
             // 1. Iniciar GSAP Plugins
             gsap.registerPlugin(ScrollTrigger);
 
@@ -901,7 +938,10 @@
             
             const isLocal = window.location.protocol === 'file:';
             const isMobile = window.matchMedia("(max-width: 768px)").matches;
-            const videoSrc = "assets/videos/video.webm";
+            
+            // CRÍTICO PARA VELOCIDADE: Mobile usa .mp4 para forçar Decodificação NATIVA por Hardware no GPU.
+            // Computadores usam .webm para transparência superior via Canvas / WebCodecs API sem engasgar
+            const videoSrc = isMobile ? "assets/videos/video.mp4" : "assets/videos/video.webm";
 
             const initVideoProxy = (src) => {
                 const scrollyVideo = new ScrollyVideo({
